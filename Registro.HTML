@@ -1,29 +1,32 @@
 <!DOCTYPE html> 
 <html lang="es">
     <head>
-        <title>Registro Aves</title>
+        <title>Orintólogia Web</title>
         <link rel="stylesheet" href="styles.css">
-        <h1>Registra tus avistamientos</h1>
     </head>
-    <body class="body">
+    <header>
+        <h1>Crea una cuenta nueva</h1>
+    </header>
+    <body class="registro_body">
+
         <ul class="NavBar">
             <li><a href="Inicio.html"> Inicio</a></li>
             <li><a href="VistaAves.html"> Registra tu avistamiento</a></li>
-        </ul>
-
-        <h2>Datos de identificacion</h2>
-        
-        <form class="main-container">
-            
+        </ul><br>
+        <div class="registro-containers">
+        <form id="new_account" class="main-container">    
+            <h2>Registrate</h2>
             <label for="full_name">Nombre: </label>
             <input type="full_name" id="full_name" maxlength=“80” minlength=“3” name="full_name" required><br>
 
-            
-            <label for="email_addr">Correo: </label>
-            <input type="email_addr" id="email_addr" name="email_addr" required><br>
+            <label for="psw">Contraseña</label>
+            <input type="password" id="psw" required><br>
+
+            <label for="email">Correo: </label>
+            <input type="email" id="email" name="email" required><br>
 
             <label for="region">Región: </label>
-            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..."><br>
+            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..." required><br>
             <datalist id="Regiones">
                 <option value="Región de Arica - Parinacota (XV)">
                 <option value="Región de Tarapaca (I)">
@@ -47,10 +50,20 @@
             <input type="text" id="comuna" name="comuna" required><br>
 
             <label for="telefono">Telefono:</label>
-            <input type="phone" placeholder="+000 0000 0000" pattern="+[0-9]{3} [0-9]{4} [0-9]{4}">
-            <input type="submit", value="Confirmar datos">
+            <input type="phone" placeholder="+000 0000 0000" pattern="+[0-9]{3} [0-9]{4} [0-9]{4}" required>
+            <button id="submit_btn" type="button">Crear cuenta</button>
         </form>
 
+        <form id="access_account", class="main-container">
+            <h2>Ingresa</h2>
 
+            <label for="email">Correo: </label>
+            <input type="email" id="email" name="email" required><br>
+
+            <label for="psw">Contraseña</label>
+            <input type="password" id="psw" required><br>
+            <button id="access_btn" type="button">Ingresar</button>
+        </form>
+        </div>
     </body>
     
