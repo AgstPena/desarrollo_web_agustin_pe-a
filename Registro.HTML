@@ -1,0 +1,56 @@
+<!DOCTYPE html> 
+<html lang="es">
+    <head>
+        <title>Registro Aves</title>
+        <link rel="stylesheet" href="styles.css">
+        <h1>Registra tus avistamientos</h1>
+    </head>
+    <body class="body">
+        <ul class="NavBar">
+            <li><a href="Inicio.html"> Inicio</a></li>
+            <li><a href="VistaAves.html"> Registra tu avistamiento</a></li>
+        </ul>
+
+        <h2>Datos de identificacion</h2>
+        
+        <form class="main-container">
+            
+            <label for="full_name">Nombre: </label>
+            <input type="full_name" id="full_name" maxlength=“80” minlength=“3” name="full_name" required><br>
+
+            
+            <label for="email_addr">Correo: </label>
+            <input type="email_addr" id="email_addr" name="email_addr" required><br>
+
+            <label for="region">Región: </label>
+            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..."><br>
+            <datalist id="Regiones">
+                <option value="Región de Arica - Parinacota (XV)">
+                <option value="Región de Tarapaca (I)">
+                <option value="Región de Antofagasta (II)">
+                <option value="Región de Atacama (III)">
+                <option value="Región de Coquimbo (IV)">
+                <option value="Región de Valparaiso (V)">
+                <option value="Región Metropolitana (RM)">
+                <option value="Región de Libertador General Bernardo O'Higgins (VI)">
+                <option value="Región del Maule (VII)">
+                <option value="Region de Ñuble (XVI)">
+                <option value="Región de Biobio (VIII)">
+                <option value="Región de La Araucania (IX)">
+                <option value="Región de Los Rios (XIV)">
+                <option value="Región de Los Lagos (X)">
+                <option value="Región de Aisen del General Carlos Ibañes del Campo (XI)">
+                <option value="Región de Magallanes y Antartica Chilena (XII)">
+            </datalist>
+
+            <label for="comuna">Comuna: </label>
+            <input type="text" id="comuna" name="comuna" required><br>
+
+            <label for="telefono">Telefono:</label>
+            <input type="phone" placeholder="+000 0000 0000" pattern="+[0-9]{3} [0-9]{4} [0-9]{4}">
+            <input type="submit", value="Confirmar datos">
+        </form>
+
+
+    </body>
+    
