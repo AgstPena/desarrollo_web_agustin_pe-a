@@ -50,7 +50,6 @@ header{
 .small{
   font-style: oblique;
   color:#3B2B1E;
-
 }
 
 button{
@@ -101,3 +100,23 @@ select{
   width: 100%;
   box-sizing: border-box;
 }
+
+.input-control {
+  display: flex;
+  flex-direction: column;
+  align-items:baseline;
+}
+.input-control input{
+  border:1px solid#3B2B1E;
+  border-radius: 3px;
+  display: block;
+  font-size: 14;
+  width: 130%; 
+}
+.input-control.success input{
+  border-color: green;
+}
+.input-control.error input{
+  border-color:red;
+}
+

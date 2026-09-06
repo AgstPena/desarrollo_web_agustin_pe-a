@@ -12,33 +12,50 @@
             <li><a href="Registro.HTML"> Crea una cuenta</a></li>
         </ul><br>
         <div class="registro-containers">
-        <form class="bird-container">
+        <form class="bird-container" id="form-ave">
 
             <h2>Informacion del ave</h2>
+            <div class="input-control">
             <label for="tipo-ave">Tipo de ave</label>
-            <input type="text" id="tipo-ave" name="tipo-ave" placeholder="Rapaz, aquatica ..." required><br>
+            <input type="text" id="tipo-ave" list="list-tipo" name="tipo-ave" placeholder="Rapaz, marina ..." ><br>
+            <datalist id="list-tipo">
+                <option value="Marina"></option>
+                <option value="Acuática"></option>
+                <option value="Rapaz"></option>
+                <option value="Cantora"></option>
+                <option value="No voladora"></option>
+            </datalist>
+            </div>
 
+            <div class="input-control">
             <label for="nombre-ave">Nombre del ave</label>
-            <input type="text", id="nombre-ave", name="nombre-ave" placeholder="Nombre de especie" required><br>
-
-            <label for="descipcion-ave"></label>
+            <input type="text", id="nombre-ave", name="nombre-ave" placeholder="Nombre de especie"><br>
+            </div>
 
             <h2>Informacion del avistamiento</h2>
+            <div class="input-control">
             <label for="lugar-avist">Region del avistamiento</label>
-            <input type="text" name="lugar" id="lugar" required><br>
+            <input type="text" name="lugar" id="lugar"><br>
+            </div>
 
+            <div class="input-control">
             <label for="fecha-avist">Fecha del avistamiento</label>
-            <input type="date" name="fecha-avist" id="fecha-avist" required><br>
+            <input type="date" name="fecha-avist" id="fecha-avist"><br>
+            </div>
 
+            <div class="input-control">
             <label for="hora-avist">Hora del avistamiento*</label>
             <input type="time" name="hora-avist" id="hora-avist"><br>
+            </div>
 
+            <div class="input-control">
             <label for="imagen-avist">Imagen del avistamiento</label>
-            <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/*,.pdf" required><br>
-
-            <button id="submit_btn" type="button">Enviar avistamiento</button><br>
+            <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/*,.pdf" ><br>
+            </div>
+            <button id="submit_btn" type="submit">Enviar avistamiento</button><br>
             <p class="small">*opcional</p>
         </form>
         </div>
+        <script src = "VistaAves.JS"></script>
     </body>
 </html>
