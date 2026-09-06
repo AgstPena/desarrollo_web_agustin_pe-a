@@ -6,10 +6,39 @@
     <header>
         <h1>Registra tu avistamiento</h1>
     </header>
-    <body>
+    <body class="registro_body">
         <ul class="NavBar">
             <li><a href="Inicio.html"> Inicio</a></li>
             <li><a href="Registro.HTML"> Crea una cuenta</a></li>
         </ul><br>
+        <div class="registro-containers">
+        <form class="bird-container">
+
+            <h2>Informacion del ave</h2>
+            <label for="tipo-ave">Tipo de ave</label>
+            <input type="text" id="tipo-ave" name="tipo-ave" placeholder="Rapaz, aquatica ..." required><br>
+
+            <label for="nombre-ave">Nombre del ave</label>
+            <input type="text", id="nombre-ave", name="nombre-ave" placeholder="Nombre de especie" required><br>
+
+            <label for="descipcion-ave"></label>
+
+            <h2>Informacion del avistamiento</h2>
+            <label for="lugar-avist">Region del avistamiento</label>
+            <input type="text" name="lugar" id="lugar" required><br>
+
+            <label for="fecha-avist">Fecha del avistamiento</label>
+            <input type="date" name="fecha-avist" id="fecha-avist" required><br>
+
+            <label for="hora-avist">Hora del avistamiento*</label>
+            <input type="time" name="hora-avist" id="hora-avist"><br>
+
+            <label for="imagen-avist">Imagen del avistamiento</label>
+            <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/*,.pdf" required><br>
+
+            <button id="submit_btn" type="button">Enviar avistamiento</button><br>
+            <p class="small">*opcional</p>
+        </form>
+        </div>
     </body>
 </html>

@@ -24,12 +24,33 @@ header{
     gap: 3px;
     align-items:baseline;
     background-color: #F7F0E3;
-    padding: 15px;
+    padding: 30px;
     border-radius: 8px;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     max-width: 300px;
     width: 200%;
     font-weight: bold;
+}
+
+.bird-container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    align-items:baseline;
+    background-color: #F7F0E3;
+    padding: 20px;
+    padding-left: 80px;
+    padding-right: 80px;
+    border-radius: 8px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    width: 200%;
+    font-weight: bold;
+}
+.small{
+  font-style: oblique;
+  color:#3B2B1E;
+
 }
 
 button{
@@ -48,6 +69,7 @@ select {
     appearance: none;
     padding-right: 10px;
 }
+
 
 ul {
   list-style-type: none;
