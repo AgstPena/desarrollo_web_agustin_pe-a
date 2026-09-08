@@ -1,6 +1,8 @@
 const form = document.getElementById("form-ave");
 const Tipo_ave = document.getElementById("tipo-ave");
+const List_Tipo = document.getElementById("list-tipo")
 
+const List_aveValidas = new Set(Array.from(List_Tipo.options).map(opt=>opt.value))
 // Success, borde verde (en styles)
 const setSuccess = element => {
     const inputControl = element.parentElement;
@@ -25,7 +27,7 @@ function validForm(){
     const Date_ave = document.getElementById("fecha-avist");
     const Imagen_ave = document.getElementById("imagen-avist")
     //error Tipo del ave
-    if(Tipo_ave.value.trim() === ''){
+    if(Tipo_ave.value.trim() === ''|| !List_aveValidas.has(Tipo_ave.value)){
         setError(Tipo_ave);
         isValid=false;
     } else {
@@ -89,6 +91,7 @@ form.addEventListener("submit", async (event) => {
 
     if (!validForm()) return; //si form invalido no continuar
 
+    //saco la info
     const Tipo_ave = document.getElementById("tipo-ave");
     const Nombre_ave = document.getElementById("nombre-ave");
     const Region_ave = document.getElementById("lugar");
@@ -97,7 +100,7 @@ form.addEventListener("submit", async (event) => {
     const Imagen_ave = document.getElementById("imagen-avist");
     
     const imagenes = await leerImagenes(Imagen_ave.files);
-
+    //guardo la info en un registro
     const registro = {
         tipo: Tipo_ave.value.trim(),
         nombre: Nombre_ave.value.trim(),
@@ -107,8 +110,9 @@ form.addEventListener("submit", async (event) => {
         imagenes: imagenes,
         creadoEn: new Date().toISOString()
     };
-
+    //la subo al local storage
     guardarRegistro(registro);
+    //aviso que esta subido y reseteo los datos
     alert("🕊️ Tu avistamiento ha sido registrado con exito 🕊️")
     form.reset();
 });
