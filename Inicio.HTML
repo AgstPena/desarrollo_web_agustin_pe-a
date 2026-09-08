@@ -15,7 +15,21 @@
         <h1>Bienvenido</h1>
         <p>Te invitamos a registrar tu avistamiento, o crea una cuenta para poder contactarte</p><br>
         <h2>Registros recientes en el sistema:</h2>
+        <div class="controles-filtro">
+            <div class="input-control">
+                <label for="filtro-tipo">Filtrar por tipo de ave</label>
+                <select id="filtro-tipo">
+                    <option value="todos">Todos</option>
+                    <option value="Marina">Marina</option>
+                    <option value="Acuática">Acuática</option>
+                    <option value="Rapaz">Rapaz</option>
+                    <option value="Cantora">Cantora</option>
+                    <option value="Urbano">Urbano</option>
+                    <option value="No voladora">No voladora</option>
+                </select>
+            </div>
+        </div>
         <div id="lista-avistamientos" class="registro-containers"></div>
-        <script src="InicioAves.js"></script>
+        <script src="InicioAvesFiltro.js"></script>
         
     </body>

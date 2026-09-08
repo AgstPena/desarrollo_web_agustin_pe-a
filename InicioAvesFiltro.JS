@@ -1,20 +1,46 @@
+let registrosOriginales = [];
+
 document.addEventListener("DOMContentLoaded", () => {
+    //Guardo los datos del local storage en mi registro
+    registrosOriginales = JSON.parse(localStorage.getItem("avistamientos")) || [];
+    //cuando cambio filtro vuelvo a renderizar
+    const filtroTipo = document.getElementById("filtro-tipo");
+    filtroTipo.addEventListener("change", renderizarLista);
+
+    renderizarLista(); // primer renderizado
+});
+
+//Funcion de renderizado
+function renderizarLista() {
+    //obtengo mi lista de avistamientos y filtros
     const contenedor = document.getElementById("lista-avistamientos");
-    const registros = JSON.parse(localStorage.getItem("avistamientos")) || [];
-    //caso inicial, no hay pajaros registrados
+    const filtroTipo = document.getElementById("filtro-tipo").value;
+
+    contenedor.innerHTML = ""; // limpo
+
+    //Filtrar por tipo
+    let registros = registrosOriginales.filter(reg => {
+        return filtroTipo === "todos" || reg.tipo === filtroTipo;
+    });
+
+    //Si no hay nada no renderizo
     if (registros.length === 0) {
-        contenedor.textContent = "Aún no hay avistamientos registrados.";
+        contenedor.textContent = "No hay avistamientos de este tipo";
         return;
     }
 
-    // Orderno para tener al mas reciente primero
-    const ordenados = [...registros].reverse();
+    //Obtengo el registro mas reciente para destacarlo
+    const masReciente = [...registrosOriginales].sort((a, b) => {
+        const fechaA = new Date(`${a.fecha}T${a.hora || "00:00"}`);
+        const fechaB = new Date(`${b.fecha}T${b.hora || "00:00"}`);
+        return fechaB - fechaA;
+    })[0];
 
-    ordenados.forEach((reg, index) => {
-        //creo un div que contenga mi registro
+    //Renderizo
+    registros.forEach(reg => {
         const card = document.createElement("div");
         card.classList.add("avistamiento-card");
-        if (index === 0) card.classList.add("ultimo-registro"); //registro especial para el mas reciente
+        if (reg === masReciente) card.classList.add("ultimo-registro");
         //Tipo+Nombre en <h3></h3>
         const titulo = document.createElement("h3");
         titulo.textContent = `${reg.tipo} - ${reg.nombre}`;
@@ -23,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const region = document.createElement("p");
         const etiquetaRegion = document.createElement("span");
         etiquetaRegion.classList.add("etiqueta");
-        etiquetaRegion.textContent = "Ubicación: ";
+        etiquetaRegion.textContent = "Región: ";
         region.appendChild(etiquetaRegion);
         region.appendChild(document.createTextNode(reg.region));
         card.appendChild(region);
@@ -33,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         etiquetaFecha.classList.add("etiqueta");
         etiquetaFecha.textContent = "Fecha: ";
         fechaHora.appendChild(etiquetaFecha);
-        fechaHora.appendChild(document.createTextNode(`${reg.fecha}${reg.hora ? " - " + reg.hora : ""}`));
+        fechaHora.appendChild(document.createTextNode(`${reg.fecha}${reg.hora ? " - " + reg.hora : ""}`)); //el ? es para que si no hay hora no aparezca el -
         card.appendChild(fechaHora);
         //Meto la imagen
         if (reg.imagenes && reg.imagenes.length > 0) {
@@ -49,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             card.appendChild(galeria);
         }
-        //appendChild de mi registro al contenedor que contiene los registros en HTML de InicioAves
+        //appendChild de mi registro al contenedor que contiene los registros de HMTL en InicioAves
         contenedor.appendChild(card);
     });
-});
+}
