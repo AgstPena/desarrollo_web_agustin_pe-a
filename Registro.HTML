@@ -16,17 +16,24 @@
         <div class="registro-containers">
         <form id="new_account" class="main-container">    
             <h2>Registrate</h2>
+            <div class="input-control">
             <label for="full_name">Nombre: </label>
-            <input type="full_name" id="full_name" maxlength=“80” minlength=“3” name="full_name" required><br>
+            <input type="full_name" id="full_name" name="full_name"><br>
+            </div>
 
+            <div class="input-control">
             <label for="psw">Contraseña</label>
-            <input type="password" id="psw" required><br>
+            <input type="password" id="psw"><br>
+            </div>
 
+            <div class="input-control">
             <label for="email">Correo: </label>
-            <input type="email" id="email" name="email" required><br>
+            <input type="email" id="email" name="email"><br>
+            </div>
 
+            <div class="input-control">
             <label for="region">Región: </label>
-            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..." required><br>
+            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..."><br>
             <datalist id="Regiones">
                 <option value="Región de Arica - Parinacota (XV)">
                 <option value="Región de Tarapaca (I)">
@@ -45,25 +52,37 @@
                 <option value="Región de Aisen del General Carlos Ibañes del Campo (XI)">
                 <option value="Región de Magallanes y Antartica Chilena (XII)">
             </datalist>
+            </div>
 
+            <div class="input-control">
             <label for="comuna">Comuna: </label>
-            <input type="text" id="comuna" name="comuna" required><br>
+            <input type="text" id="comuna" name="comuna"><br>
+            </div>
 
+            <div class="input-control">
             <label for="telefono">Telefono:</label>
-            <input type="phone" placeholder="+000 0000 0000" pattern="+[0-9]{3} [0-9]{4} [0-9]{4}" required>
+            <input type="phone" id="telefono" placeholder="+000 0000 0000">
+            </div>
+
             <button id="submit_btn" type="button">Crear cuenta</button>
         </form>
 
         <form id="access_account", class="main-container">
             <h2>Ingresa</h2>
 
+            <div class="input-control">
             <label for="email">Correo: </label>
             <input type="email" id="email" name="email" required><br>
+            </div>
 
+            <div class="input-control">
             <label for="psw">Contraseña</label>
             <input type="password" id="psw" required><br>
+            </div>
+
             <button id="access_btn" type="button">Inicia sesion</button>
         </form>
-        </div>
+
+        <script src = "RegistroAves.JS"></script>
     </body>
     
