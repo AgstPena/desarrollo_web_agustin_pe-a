@@ -16,8 +16,8 @@ const setError = (element) => {
     inputControl.classList.remove('success');
 };
 
-const validForm = (event) => {
-    event.preventDefault();
+function validForm(){
+    
     let isValid = true;
     const Tipo_ave= document.getElementById("tipo-ave");
     const Nombre_ave= document.getElementById("nombre-ave");
@@ -61,9 +61,54 @@ const validForm = (event) => {
         setSuccess(Imagen_ave);
     }
 
-    if (isValid) {
-        form.reset();
-    }
+    return isValid;
 }
 
-form.addEventListener("submit", validForm);
+//imagen a base64 para guardar
+function leerImagenes(fileList) {
+    const promesas = [...fileList].map(file => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve({ nombre: file.name, data: reader.result });
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    });
+    return Promise.all(promesas);
+}
+
+//guardar resultados en local storage
+function guardarRegistro(registro) {
+    const registros = JSON.parse(localStorage.getItem("avistamientos")) || [];
+    registros.push(registro);
+    localStorage.setItem("avistamientos", JSON.stringify(registros));
+}
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!validForm()) return; //si form invalido no continuar
+
+    const Tipo_ave = document.getElementById("tipo-ave");
+    const Nombre_ave = document.getElementById("nombre-ave");
+    const Region_ave = document.getElementById("lugar");
+    const Date_ave = document.getElementById("fecha-avist");
+    const Hora_ave = document.getElementById("hora-avist");
+    const Imagen_ave = document.getElementById("imagen-avist");
+    
+    const imagenes = await leerImagenes(Imagen_ave.files);
+
+    const registro = {
+        tipo: Tipo_ave.value.trim(),
+        nombre: Nombre_ave.value.trim(),
+        region: Region_ave.value.trim(),
+        fecha: Date_ave.value,
+        hora: Hora_ave.value,
+        imagenes: imagenes,
+        creadoEn: new Date().toISOString()
+    };
+
+    guardarRegistro(registro);
+    alert("🕊️ Tu avistamiento ha sido registrado con exito 🕊️")
+    form.reset();
+});
