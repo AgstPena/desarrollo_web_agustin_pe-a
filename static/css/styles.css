@@ -114,7 +114,7 @@ select{
   border:1px solid#3B2B1E;
   border-radius: 3px;
   display: block;
-  font-size: 14;
+  font-size: 14px;
   width: 130%; 
 }
 .input-control.success input{
