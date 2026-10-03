@@ -1,7 +1,7 @@
 <!DOCTYPE html> 
 <html lang="es">
     <head>
-        <link rel="stylesheet" href="../static/css/styles.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
         <title>Ornitólogia Web</title>
     </head>
     <header>
@@ -28,8 +28,10 @@
                     <option value="No voladora">No voladora</option>
                 </select>
             </div>
+        {% if error %}<p class="error-msg">{{ error }}</p>{% endif %}
         </div>
         <div id="lista-avistamientos" class="registro-containers"></div>
-        <script src="InicioAvesFiltro.js"></script>
+        <script src="{{ url_for('static', filename='js/RegistroAves.js') }}"></script>
+        <a href="{{ url_for('index') }}">Inicio</a>
         
     </body>

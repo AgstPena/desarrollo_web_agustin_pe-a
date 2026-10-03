@@ -2,6 +2,7 @@
 <html lang="es">
     <head>
         <title>Registrate</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
         <link rel="stylesheet" href="../static/css/styles.css">
     </head>
     <body class="registro_body">
@@ -11,20 +12,16 @@
     </header>
 
         <ul class="NavBar">
-            <li><a href="Inicio.html"> Inicio</a></li>
+            <li><a href="{{ url_for('index') }}"> Inicio</a></li>
             <li><a href="VistaAves.html"> Registra tu avistamiento</a></li>
         </ul><br>
         <div class="registro-containers">
-        <form id="new_account" class="main-container">    
+        <form id="new_account" class="main-container" method="post" action="{{ url_for('register') }}">
+            {% if error %}<p class="error-msg">{{ error }}</p>{% endif %}    
             <h2>Registrate</h2>
             <div class="input-control">
             <label for="full_name">Nombre* </label>
             <input type="text" id="full_name" name="full_name"><br>
-            </div>
-
-            <div class="input-control">
-            <label for="psw">Contraseña*</label>
-            <input type="password" id="psw"><br>
             </div>
 
             <div class="input-control">
@@ -34,58 +31,33 @@
 
             <div class="input-control">
             <label for="region">Región* </label>
-            <input type="text" id="region" name="region" list="Regiones" placeholder="Región..."><br>
-            <datalist id="Regiones">
-                <option value="Región de Arica - Parinacota (XV)">
-                <option value="Región de Tarapaca (I)">
-                <option value="Región de Antofagasta (II)">
-                <option value="Región de Atacama (III)">
-                <option value="Región de Coquimbo (IV)">
-                <option value="Región de Valparaiso (V)">
-                <option value="Región Metropolitana (RM)">
-                <option value="Región de Libertador General Bernardo O'Higgins (VI)">
-                <option value="Región del Maule (VII)">
-                <option value="Region de Ñuble (XVI)">
-                <option value="Región de Biobio (VIII)">
-                <option value="Región de La Araucania (IX)">
-                <option value="Región de Los Rios (XIV)">
-                <option value="Región de Los Lagos (X)">
-                <option value="Región de Aisen del General Carlos Ibañes del Campo (XI)">
-                <option value="Región de Magallanes y Antartica Chilena (XII)">
-            </datalist>
+            <select id="region" name="region">
+                <option value="">Selecciona una región</option>
+                {% for r in regiones %}
+                <option value="{{ r.id }}">{{ r.nombre }}</option>
+                {% endfor %}
+            </select>
             </div>
 
             <div class="input-control">
             <label for="comuna">Comuna* </label>
-            <input type="text" id="comuna" name="comuna"><br>
+            <select id="comuna" name="comuna_id">
+                <option value="">Selecciona primero una región</option>
+            </select>
             </div>
 
             <div class="input-control">
             <label for="telefono">Telefono*</label>
-            <input type="number" id="telefono" placeholder="+000 0000 0000">
+            <input type="tel" id="telefono" name="telefono" placeholder="+569 1234 5678">
             </div>
             
 
             <button id="submit_btn" type="button">Crear cuenta</button>
         </form>
 
-        <form id="access_account" class="main-container">
-            <h2>Ingresa</h2>
 
-            <div class="input-control">
-            <label for="email_Ingreso">Correo: </label>
-            <input type="email" id="email_Ingreso" name="email" required><br>
-            </div>
-
-            <div class="input-control">
-            <label for="psw_Ingreso">Contraseña:</label>
-            <input type="password" id="psw_Ingreso" required><br>
-            </div>
-
-            <button id="access_btn" type="button">Inicia sesion</button>
-        </form>
         </div>
 
-        <script src = "RegistroAves.JS"></script>
+        <script src="{{ url_for('static', filename='js/RegistroAves.js') }}"></script>
     </body>
     
