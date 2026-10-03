@@ -3,7 +3,6 @@
     <head>
         <title>Registrate</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-        <link rel="stylesheet" href="../static/css/styles.css">
     </head>
     <body class="registro_body">
 
@@ -13,7 +12,7 @@
 
         <ul class="NavBar">
             <li><a href="{{ url_for('index') }}"> Inicio</a></li>
-            <li><a href="VistaAves.html"> Registra tu avistamiento</a></li>
+            <li><a href="{{ url_for('vista_aves') }}"> Registra tu avistamiento</a></li>
         </ul><br>
         <div class="registro-containers">
         <form id="new_account" class="main-container" method="post" action="{{ url_for('register') }}">

@@ -1,6 +1,6 @@
 import pymysql
 from sqlalchemy import (
-    create_engine, Column, Integer, String, DateTime, Text, ForeignKey
+    create_engine, Column, Integer, String, DateTime, Text, ForeignKey, func
 )
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
@@ -115,17 +115,20 @@ def get_registro_by_avistamiento(id):
         user = session.query(Registro).filter_by(avistamiento_id=id).all()
         session.close()
         return user
-
+def get_aves():
+    with SessionLocal() as session:
+        user= session.query(Ave).order_by(Ave.nombre).all()
+        session.close()
+        return user
+def get_ave_by_id(ave_id):
+    with SessionLocal() as session:
+        user = session.get(Ave, ave_id)
+        session.close()
+        return user
 #Crear
 def create_voluntario(nombre, email, telefono, comuna_id):
     with SessionLocal() as session:
-        new_voluntario=Voluntario(
-            nombre=nombre,
-            email=email,
-            telefono=telefono,
-            comuna_id = comuna_id,
-            fecha_registro=datetime.now()
-        )
+        new_voluntario=Voluntario(nombre=nombre, email=email, telefono=telefono, comuna_id = comuna_id, fecha_registro=datetime.now())
         session.add(new_voluntario)
         session.flush()
         nuevo_id=new_voluntario.id
@@ -133,18 +136,18 @@ def create_voluntario(nombre, email, telefono, comuna_id):
         return nuevo_id
 
 
-def create_avistamiento(vol_id,ave_id,fecha_hora,lugar, descripcion):
+def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion=None, archivos=()):
     with SessionLocal() as session:
-        new_avistamiento = Avistamiento(
-            voluntario_id=vol_id,
-            ave_id=ave_id,
-            fecha_hora=fecha_hora,
-            lugar=lugar,
-            descripcion=descripcion
-        )
-        session.add(new_avistamiento)
+        nuevo = Avistamiento(voluntario_id=voluntario_id, ave_id=ave_id, fecha_hora=fecha_hora, lugar=lugar, descripcion=descripcion)
+        nuevo.registros = [
+            Registro(ruta_archivo=ruta, nombre_archivo=nombre)
+            for ruta, nombre in archivos
+        ]
+        session.add(nuevo)
+        session.flush()
+        nuevo_id = nuevo.id
         session.commit()
-        session.close()
+        return nuevo_id
         
 def register_voluntario(nombre, email, telefono, comuna):
     if get_voluntario_by_email(email) is not None:

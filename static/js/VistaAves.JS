@@ -1,8 +1,10 @@
 const form = document.getElementById("form-ave");
-const Tipo_ave = document.getElementById("tipo-ave");
-const List_Tipo = document.getElementById("list-tipo")
+const List_Tipo = document.getElementById("list-tipo");
+const List_aveValidas = new Set(Array.from(List_Tipo.options).map(opt => opt.value));
 
-const List_aveValidas = new Set(Array.from(List_Tipo.options).map(opt=>opt.value))
+const TIPOS_IMAGEN = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const MAX_ARCHIVOS = 5;
+const MAX_BYTES = 5 * 1024 * 1024;
 // Success, borde verde (en styles)
 const setSuccess = element => {
     const inputControl = element.parentElement;
@@ -17,102 +19,83 @@ const setError = (element) => {
     inputControl.classList.add('error');
     inputControl.classList.remove('success');
 };
-
+//mostrar mensaje, lo que dice
+const mostrarMensaje = texto => {
+    document.getElementById("form-msg").textContent = texto;
+};
 function validForm(){
-    
     let isValid = true;
+    const mensajes = [];
+
     const Tipo_ave= document.getElementById("tipo-ave");
     const Nombre_ave= document.getElementById("nombre-ave");
-    const Region_ave=document.getElementById("lugar");
+    const Lugar = document.getElementById("lugar");
     const Date_ave = document.getElementById("fecha-avist");
-    const Imagen_ave = document.getElementById("imagen-avist")
-    //error Tipo del ave
-    if(Tipo_ave.value.trim() === ''|| !List_aveValidas.has(Tipo_ave.value)){
-        setError(Tipo_ave);
-        isValid=false;
-    } else {
-        setSuccess(Tipo_ave);
-    }
+    const Hora_ave = document.getElementById("hora-avist");
+    const Imagen_ave = document.getElementById("imagen-avist");
+    //funcion que facilita asignar set success/error
+    const check = (el, ok, msg) => {
+        if (ok) { setSuccess(el); }
+        else { setError(el); isValid = false; if (msg) mensajes.push(msg); }
+    };
+    //error TipoAve
+    check(Tipo_ave, List_aveValidas.has(Tipo_ave.value), "Elige un tipo de ave de la lista.\r\n");
     //error Nombre del ave
-    if (Nombre_ave.value.trim() === ''){
-        setError(Nombre_ave);
-        isValid=false;
-    } else {
-        setSuccess(Nombre_ave);
-    }
+    check(Nombre_ave, Nombre_ave.value !== "", "Elige un ave de la lista.");
     //error Region del ave
-    if (Region_ave.value.trim()===''){
-        setError(Region_ave);
-        isValid=false;
-    } else {
-        setSuccess(Region_ave);
-    }
-    //error Date
-    const hoy = new Date();
-    if (Date_ave.valueAsDate>hoy||!Date_ave.valueAsDate){
-        setError(Date_ave);
-        isValid=false;
-    } else {
-        setSuccess(Date_ave);
-    }
+    check(Lugar, Lugar.value.trim() !== "", "Indica la zona del avistamiento.");
+
+    //error Date y hora
+    const ahora = new Date();
+    const fechaOk = Date_ave.value !== "" && new Date(`${Date_ave.value}T00:00`) <= ahora;
+    const horaOk = Hora_ave.value !== "" &&
+        (!fechaOk || new Date(`${Date_ave.value}T${Hora_ave.value}`) <= ahora);
+    check(Date_ave, fechaOk, "Indica una fecha válida (no futura).");
+    check(Hora_ave, horaOk, "Indica una hora válida (no futura).");
+
     //errror Imagen
-    if (!Imagen_ave.value){
-        setError(Imagen_ave);
-        isValid=false;
-    } else {
-        setSuccess(Imagen_ave);
-    }
 
+    const files = [...Imagen_ave.files];
+    let msgImg = "";
+    if (files.length === 0) msgImg = "Debes subir al menos una imagen.";
+    else if (files.length > MAX_ARCHIVOS) msgImg = `Máximo ${MAX_ARCHIVOS} imágenes.`;
+    else if (files.some(f => !TIPOS_IMAGEN.includes(f.type)))
+        msgImg = "Solo se permiten imágenes JPG, PNG, GIF o WEBP.";
+    else if (files.some(f => f.size > MAX_BYTES))
+        msgImg = "Cada imagen debe pesar menos de 5 MB.";
+    check(Imagen_ave, msgImg === "", msgImg);
+
+    mostrarMensaje(mensajes.join(" "));
     return isValid;
-}
-
-//imagen a base64 para guardar
-function leerImagenes(fileList) {
-    const promesas = [...fileList].map(file => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({ nombre: file.name, data: reader.result });
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    });
-    return Promise.all(promesas);
-}
-
-//guardar resultados en local storage
-function guardarRegistro(registro) {
-    const registros = JSON.parse(localStorage.getItem("avistamientos")) || [];
-    registros.push(registro);
-    localStorage.setItem("avistamientos", JSON.stringify(registros));
 }
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     if (!validForm()) return; //si form invalido no continuar
 
-    //saco la info
-    const Tipo_ave = document.getElementById("tipo-ave");
-    const Nombre_ave = document.getElementById("nombre-ave");
-    const Region_ave = document.getElementById("lugar");
-    const Date_ave = document.getElementById("fecha-avist");
-    const Hora_ave = document.getElementById("hora-avist");
-    const Imagen_ave = document.getElementById("imagen-avist");
-    
-    const imagenes = await leerImagenes(Imagen_ave.files);
-    //guardo la info en un registro
-    const registro = {
-        tipo: Tipo_ave.value.trim(),
-        nombre: Nombre_ave.value.trim(),
-        region: Region_ave.value.trim(),
-        fecha: Date_ave.value,
-        hora: Hora_ave.value,
-        imagenes: imagenes,
-        creadoEn: new Date().toISOString()
-    };
-    //la subo al local storage
-    guardarRegistro(registro);
-    //aviso que esta subido y reseteo los datos
-    alert("🕊️ Tu avistamiento ha sido registrado con exito 🕊️")
-    form.reset();
+    const btn = document.getElementById("submit_btn");
+    btn.disabled = true;
+
+    try {
+        const resp = await fetch(form.action, { method: "POST", body: new FormData(form) });
+        const data = await resp.json();
+
+        if (resp.status === 401) {     //error 401, no se presento credenciales
+            alert(data.error);
+            window.location.href = form.dataset.registroUrl;
+            return;
+        }
+        if (!data.ok) {
+            mostrarMensaje(data.error);
+            return;
+        }
+        alert("🕊️ Tu avistamiento ha sido registrado con exito 🕊️");
+        form.reset();
+        mostrarMensaje("");
+        form.querySelectorAll(".input-control").forEach(c => c.classList.remove("success", "error"));
+    } catch (e) {
+        mostrarMensaje("No se pudo conectar con el servidor.");
+    } finally {
+        btn.disabled = false;
+    }
 });

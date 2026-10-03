@@ -1,22 +1,28 @@
 <html>
     <head>
-        <link rel="stylesheet" href="../static/css/styles.css">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
         <title>Avistamientos</title>
     </head>
-    <header>
-        <h1>Registra tu avistamiento</h1>
-    </header>
+    
     <body class="registro_body">
+        <header>
+            <h1>Registra tu avistamiento</h1>
+        </header>
+
         <ul class="NavBar">
-            <li><a href="Inicio.html"> Inicio</a></li>
-            <li><a href="Registro.HTML"> Crea una cuenta</a></li>
+            <li><a href="{{ url_for('index') }}"> Inicio</a></li>
+            <li><a href="{{ url_for('register') }}"> Crea una cuenta</a></li>
         </ul><br>
+
         <div class="registro-containers">
-        <form class="bird-container" id="form-ave">
+        <form class="bird-container" id="form-ave" method="post" enctype="multipart/form-data" action="{{ url_for('vista_aves') }}"
+            data-registro-url="{{ url_for('register') }}" novalidate>
+            <p id="form-msg" class="error-msg"></p>
 
             <h2>Informacion del ave</h2>
             <div class="input-control">
-            <label for="tipo-ave">Tipo de ave</label>
+            <label for="tipo-ave">Tipo de ave*</label>
             <input type="text" id="tipo-ave" list="list-tipo" name="tipo-ave" placeholder="Rapaz, marina ..." ><br>
             <datalist id="list-tipo">
                 <option value="Marina"></option>
@@ -29,18 +35,22 @@
             </div>
 
             <div class="input-control">
-            <label for="nombre-ave">Nombre del ave</label>
-            <input type="text", id="nombre-ave", name="nombre-ave" placeholder="Nombre de especie"><br>
+                <label for="nombre-ave">Nombre del ave</label>
+                <select id="nombre-ave" name="ave_id">
+                    <option value="">Selecciona un ave</option>
+                    {% for a in aves %}
+                    <option value="{{ a.id }}">{{ a.nombre }}</option>
+                    {% endfor %}
+                </select>
             </div>
-
             <h2>Informacion del avistamiento</h2>
             <div class="input-control">
-            <label for="lugar-avist">Zona del avistamiento</label>
+            <label for="lugar-avist">Zona del avistamiento*</label>
             <input type="text" name="lugar" id="lugar"><br>
             </div>
 
             <div class="input-control">
-            <label for="fecha-avist">Fecha del avistamiento</label>
+            <label for="fecha-avist">Fecha del avistamiento*</label>
             <input type="date" name="fecha-avist" id="fecha-avist"><br>
             </div>
 
@@ -51,12 +61,11 @@
 
             <div class="input-control">
             <label for="imagen-avist">Imagen del avistamiento</label>
-            <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/*,.pdf" ><br>
+            <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/jpeg,image/png,image/gif,image/webp" ><br>
             </div>
             <button id="submit_btn" type="submit">Enviar avistamiento</button><br>
-            <p class="small">*opcional</p>
         </form>
         </div>
-        <script src = "VistaAves.JS"></script>
+        <script src="{{ url_for('static', filename='js/VistaAves.js') }}"></script>
     </body>
 </html>
