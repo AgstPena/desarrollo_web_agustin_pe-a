@@ -3,7 +3,7 @@ from sqlalchemy import (
     create_engine, Column, Integer, String, DateTime, Text, ForeignKey, func
 )
 from datetime import datetime
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload, selectinload
 
 DB_NAME = "tarea2"
 DB_USERNAME = "cc5002"
@@ -125,6 +125,20 @@ def get_ave_by_id(ave_id):
         user = session.get(Ave, ave_id)
         session.close()
         return user
+    
+def get_ultimos_avistamientos(n=2):
+    with SessionLocal() as session:
+        return (
+            session.query(Avistamiento)
+            .options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario),
+                selectinload(Avistamiento.registros),
+            )
+            .order_by(Avistamiento.id.desc())
+            .limit(n)
+            .all()
+        )
 #Crear
 def create_voluntario(nombre, email, telefono, comuna_id):
     with SessionLocal() as session:
@@ -154,3 +168,4 @@ def register_voluntario(nombre, email, telefono, comuna):
         return False, "El correo ya esta en uso."
     nuevo_id = create_voluntario(nombre,email, telefono, comuna)
     return True, nuevo_id
+

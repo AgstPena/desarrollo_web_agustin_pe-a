@@ -125,18 +125,14 @@ select{
 }
 
 .avistamiento-card {
-    border: 1px solid #ccc;
+    border: 2px solid #C7693A;
     background-color: #F7F0E3;
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
-}
-
-.ultimo-registro {
-    border: 2px solid #C7693A;
-    background-color: #F7F0E3;
     box-shadow: 0 0 8px rgba(46, 125, 50, 0.4);
 }
+
 
 .galeria img {
     max-width: 300px;

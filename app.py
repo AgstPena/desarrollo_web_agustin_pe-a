@@ -107,7 +107,7 @@ def register():
 
 @app.route("/")
 def index():
-    return render_template("Inicio.html")
+    return render_template("Inicio.html", avistamientos=db.get_ultimos_avistamientos(2))
 
 @app.route("/comunas/<int:region_id>")
 def comunas(region_id):
