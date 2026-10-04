@@ -1,13 +1,14 @@
 import re
 import os
-from flask import Flask, request, session, redirect, render_template, url_for, jsonify, flash
+from flask import Flask, request, session, redirect, render_template, url_for, jsonify, flash, abort
 import db
 import uuid
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from functools import wraps
+import math
 
-
+#info utiles
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
 TEL_RE = re.compile(r"^\+\d{3}\s?\d{4}\s?\d{4}$")
 
@@ -31,27 +32,27 @@ def es_imagen_valida(f):
             or head.startswith(b"\x89PNG\r\n\x1a\n")              # PNG
             or head.startswith((b"GIF87a", b"GIF89a"))            # GIF
             or (head[:4] == b"RIFF" and head[8:12] == b"WEBP"))   # WEBP
-#info util
+#mas info util para imagenes
 EXT_PERMITIDAS = {"jpg", "jpeg", "png", "gif", "webp"}
 MAX_ARCHIVOS = 5
 MAX_BYTES = 5 * 1024 * 1024 
 #validar resultados form avistamiento
 def validate_avistamiento(ave_id, lugar, fecha, hora, archivos):
-    if ave_id is None or db.get_ave_by_id(ave_id) is None:
+    if ave_id is None or db.get_ave_by_id(ave_id) is None: #id no nulo y esta en la base de datos
         return "Debes elegir un ave de la lista."
-    if not lugar or len(lugar) > 200:
+    if not lugar or len(lugar) > 200: #lugar no nulo y menor a 200 palabras
         return "La zona del avistamiento es obligatoria (máx. 200 caracteres)."
-    try:
+    try: 
         fecha_hora = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
-    except ValueError:
+    except ValueError: #pasar a datetime, si falla tira error
         return "Debes indicar una fecha y una hora válidas."
-    if fecha_hora > datetime.now():
+    if fecha_hora > datetime.now(): #si es del futuro tiramos error
         return "La fecha y hora no pueden estar en el futuro."
-    if not archivos:
+    if not archivos: #no hay archivos
         return "Debes subir al menos una imagen."
-    if len(archivos) > MAX_ARCHIVOS:
+    if len(archivos) > MAX_ARCHIVOS: #hay mas de MAX archivos
         return f"Puedes subir como máximo {MAX_ARCHIVOS} imágenes."
-    for f in archivos:
+    for f in archivos: #Verificamos que el/los archivos sean del formato requerido + no mas del tamaño requerido
         ext = f.filename.rsplit(".", 1)[-1].lower() if "." in f.filename else ""
         if ext not in EXT_PERMITIDAS or not es_imagen_valida(f):
             return f"«{f.filename}» no es una imagen válida (JPG, PNG, GIF o WEBP)."
@@ -60,12 +61,12 @@ def validate_avistamiento(ave_id, lugar, fecha, hora, archivos):
         f.seek(0)
         if tam > MAX_BYTES:
             return f"«{f.filename}» pesa más de 5 MB."
-    return ""
+    return "" #si nada falla no reporto mensaje de error
 
 #exigir sesion activa
 def login_required(f):
     @wraps(f)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs): 
         user_id = session.get("user_id")
         if user_id is None or db.get_voluntario_by_id(user_id) is None:
             session.clear()
@@ -159,5 +160,27 @@ def vista_aves():
 def demasiado_grande(e):
     return jsonify(ok=False, error="Las imágenes son demasiado pesadas (máx. 5 MB cada una)."), 413
 
+PER_PAGE = 3
+
+@app.route("/ListaData")
+def lista_data():
+    page = max(1, request.args.get("page", 1, type=int))
+    avistamientos, total = db.get_avistamientos_pagina(page, PER_PAGE)
+    total_pages = max(1, math.ceil(total / PER_PAGE))
+
+    if page > total_pages:      # ?page=999 -> llevar a la última página
+        return redirect(url_for("lista_data", page=total_pages))
+
+    return render_template("ListaData.html", avistamientos=avistamientos,
+                           page=page, total_pages=total_pages)
+
+
+@app.route("/avistamiento/<int:avistamiento_id>")
+def detalle_avistamiento(avistamiento_id):
+    a = db.get_avistamiento_detalle(avistamiento_id)
+    if a is None:
+        abort(404)
+    return render_template("DetalleAvistamiento.html", a=a)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

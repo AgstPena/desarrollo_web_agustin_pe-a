@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -12,6 +13,7 @@
 
         <ul class="NavBar">
             <li><a href="{{ url_for('index') }}"> Inicio</a></li>
+            <li><a href="{{ url_for('lista_data') }}"> Avistamientos</a></li>
             <li><a href="{{ url_for('register') }}"> Crea una cuenta</a></li>
         </ul><br>
 
@@ -35,7 +37,7 @@
             </div>
 
             <div class="input-control">
-                <label for="nombre-ave">Nombre del ave</label>
+                <label for="nombre-ave">Nombre del ave*</label>
                 <select id="nombre-ave" name="ave_id">
                     <option value="">Selecciona un ave</option>
                     {% for a in aves %}
@@ -60,7 +62,7 @@
             </div>
 
             <div class="input-control">
-            <label for="imagen-avist">Imagen del avistamiento</label>
+            <label for="imagen-avist">Imagen del avistamiento*</label>
             <input type="file" name="imagen-avist" id="imagen-avist" multiple accept="image/jpeg,image/png,image/gif,image/webp" ><br>
             </div>
             <button id="submit_btn" type="submit">Enviar avistamiento</button><br>

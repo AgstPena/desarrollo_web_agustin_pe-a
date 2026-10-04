@@ -169,3 +169,31 @@ def register_voluntario(nombre, email, telefono, comuna):
     nuevo_id = create_voluntario(nombre,email, telefono, comuna)
     return True, nuevo_id
 
+def get_avistamientos_pagina(page, per_page=4):
+    with SessionLocal() as session:
+        total = session.query(func.count(Avistamiento.id)).scalar()
+        items = (
+            session.query(Avistamiento)
+            .options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario),
+            )
+            .order_by(Avistamiento.fecha_hora.desc(), Avistamiento.id.desc())
+            .offset((page - 1) * per_page)
+            .limit(per_page)
+            .all()
+        )
+        return items, total
+
+
+def get_avistamiento_detalle(avistamiento_id):
+    with SessionLocal() as session:
+        return (
+            session.query(Avistamiento).options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario).joinedload(Voluntario.comuna).joinedload(Comuna.region),
+                selectinload(Avistamiento.registros),
+            )
+            .filter_by(id=avistamiento_id)
+            .first()
+        )

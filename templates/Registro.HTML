@@ -12,7 +12,9 @@
 
         <ul class="NavBar">
             <li><a href="{{ url_for('index') }}"> Inicio</a></li>
+            <li><a href="{{ url_for('lista_data') }}"> Avistamientos</a></li>
             <li><a href="{{ url_for('vista_aves') }}"> Registra tu avistamiento</a></li>
+            
         </ul><br>
         <div class="registro-containers">
         <form id="new_account" class="main-container" method="post" action="{{ url_for('register') }}">

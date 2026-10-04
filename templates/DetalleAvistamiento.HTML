@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Avistamiento de {{ a.ave.nombre }}</title>
+</head>
+<body class="inicio-body">
+    <header>
+        <h1>Detalle del avistamiento</h1>
+    </header>
+
+    <ul class="NavBar">
+        <li><a href="{{ url_for('index') }}"> Inicio</a></li>
+        <li><a href="{{ url_for('register') }}"> Crea una cuenta</a></li>
+        <li><a href="{{ url_for('vista_aves') }}"> Registra tu avistamiento</a></li>
+    </ul><br>
+
+    <div class="avistamiento-card">
+        <h2>{{ a.ave.nombre }}</h2>
+        <p><span class="etiqueta">Fecha - hora: </span>{{ a.fecha_hora.strftime("%d-%m-%Y %H:%M") }}</p>
+        <p><span class="etiqueta">Lugar: </span>{{ a.lugar }}</p>
+        {% if a.descripcion %}
+        <p><span class="etiqueta">Descripcion: </span>{{ a.descripcion }}</p>
+        {% endif %}
+
+        <h3>Voluntario</h3>
+        <p><span class="etiqueta">Nombre: </span>{{ a.voluntario.nombre }}</p>
+        <p><span class="etiqueta">Comuna: </span>{{ a.voluntario.comuna.nombre }}</p>
+        <p><span class="etiqueta">Region: </span>{{ a.voluntario.comuna.region.nombre }}</p>
+
+        <h3>Imagen</h3>
+        <div class="galeria">
+            {% for r in a.registros %}
+            <a href="{{ url_for('static', filename=r.ruta_archivo) }}" target="_blank">
+                <img src="{{ url_for('static', filename=r.ruta_archivo) }}" alt="{{ r.nombre_archivo }}">
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <p><a href="{{ url_for('lista_data') }}">&laquo; Volver al listado</a></p>
+</body>
+</html>
