@@ -170,7 +170,8 @@ select{
 }
 .paginacion { 
   margin: 0px auto; 
-   
+  display: flex;
+  justify-content: center;
   gap: 5px; 
 }
 .fila-click { cursor: pointer; }

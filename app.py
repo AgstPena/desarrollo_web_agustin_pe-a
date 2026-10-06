@@ -63,7 +63,7 @@ def validate_avistamiento(ave_id, lugar, fecha, hora, archivos):
             return f"«{f.filename}» pesa más de 5 MB."
     return "" #si nada falla no reporto mensaje de error
 
-#exigir sesion activa
+#exigir sesion activa, si no encuentro una sesion activa redirecciono a la pestaña de registarr
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs): 
@@ -85,56 +85,58 @@ app.config["MAX_CONTENT_LENGTH"] = 26 * 1024 * 1024
 UPLOAD_DIR = os.path.join(app.static_folder, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+#Pagina de registro, en POST valido los datos del usuario y si son correctos los subo al sql y redirecciono al inicio
 @app.route("/Registro", methods=["GET", "POST"])
 def register():
     error=""
-    if request.method == 'POST':
+    if request.method == 'POST': #busco la info del form
         nombre = request.form.get("full_name", "")
         email = request.form.get("email").strip()
         telefono = request.form.get("telefono").strip()
         comuna = request.form.get("comuna_id", type=int)
         
-        error = validate_registro(nombre, email, telefono, comuna)
+        error = validate_registro(nombre, email, telefono, comuna) #valido
         if not error:
-            status, result = db.register_voluntario(nombre, email, telefono, comuna)
-            if status: 
+            status, result = db.register_voluntario(nombre, email, telefono, comuna) #registro el voluntario
+            if status: #si no fallo redirecciono al inicio
                 
                 session["user_id"] = result
                 return redirect(url_for("index")) 
             error += result
         
-    return render_template("Registro.html", error = error, regiones=db.get_regiones())
+    return render_template("Registro.html", error = error, regiones=db.get_regiones()) #en Get muestro la pagina y busco las regiones
     
-
+#Pagina de Inicio, al cargar busco los 2 avistamientos mas recientes para mostrarlos
 @app.route("/")
 def index():
     return render_template("Inicio.html", avistamientos=db.get_ultimos_avistamientos(2))
 
+#ruta de registro, me permite mostrar las comunas dependiendo de la region elegida
 @app.route("/comunas/<int:region_id>")
 def comunas(region_id):
     return jsonify([{"id": c.id, "nombre": c.nombre}
                     for c in db.get_comunas_by_region(region_id)])
 
-
+#Pagina de registrar avistamiento, requere login para ver, en GET busco las aves de mi database de aves, en POST valido resultados de form, si son correctos los subo a mis sql
 @app.route("/VistaAves", methods=["GET", "POST"])
 @login_required
 def vista_aves():
     if request.method == "GET":
-        return render_template("VistaAves.html", aves=db.get_aves())
-
+        return render_template("VistaAves.html", aves=db.get_aves()) #en GET busco el nombre de las aves de mi sql
+    #POST, busco el resultado del form
     ave_id = request.form.get("ave_id", type=int)
     lugar = request.form.get("lugar", "").strip()
     fecha = request.form.get("fecha-avist", "")
     hora = request.form.get("hora-avist", "")
     archivos = [f for f in request.files.getlist("imagen-avist") if f.filename]
 
-    error = validate_avistamiento(ave_id, lugar, fecha, hora, archivos)
+    error = validate_avistamiento(ave_id, lugar, fecha, hora, archivos) #valido el form
     if error:
-        return jsonify(ok=False, error=error), 400
+        return jsonify(ok=False, error=error), 400 #error 400,Bad Request
 
     fecha_hora = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
     guardados = []  
-    try:
+    try:    #try de guardar los archivos
         for f in archivos:
             ext = f.filename.rsplit(".", 1)[-1].lower()
             nombre_unico = f"{uuid.uuid4().hex}.{ext}" #uuid = universal unique identifier 
@@ -144,10 +146,10 @@ def vista_aves():
 
         db.create_avistamiento(session["user_id"], ave_id, fecha_hora,
                        lugar, None, guardados)
-    except Exception:
+    except Exception: #falla el try, tiro error
         app.logger.exception("Error al guardar el avistamiento")
         for ruta, _ in guardados:          
-            try:
+            try:    #si fallo intento remover los archivos subidos
                 os.remove(os.path.join(app.static_folder, ruta))
             except OSError:
                 pass
@@ -155,32 +157,32 @@ def vista_aves():
 
     return jsonify(ok=True)
 
-
+#Manejo error 413= archivo muy grande
 @app.errorhandler(413)
 def demasiado_grande(e):
     return jsonify(ok=False, error="Las imágenes son demasiado pesadas (máx. 5 MB cada una)."), 413
 
-PER_PAGE = 3
-
+#Cuantos avistamientos quiero ver por pagina
+PER_PAGE = 4
+#Pagina de todos los avistamientos, 
 @app.route("/ListaData")
 def lista_data():
-    page = max(1, request.args.get("page", 1, type=int))
-    avistamientos, total = db.get_avistamientos_pagina(page, PER_PAGE)
+    page = max(1, request.args.get("page", 1, type=int)) #el max es para evitar irnos a paginas menores que 1
+    avistamientos, total = db.get_avistamientos_pagina(page, PER_PAGE) 
     total_pages = max(1, math.ceil(total / PER_PAGE))
 
-    if page > total_pages:      # ?page=999 -> llevar a la última página
+    if page > total_pages:      # si nos vamos a una pagina muy alta nos regresa a la ultima
         return redirect(url_for("lista_data", page=total_pages))
 
-    return render_template("ListaData.html", avistamientos=avistamientos,
-                           page=page, total_pages=total_pages)
+    return render_template("ListaData.html", avistamientos=avistamientos, page=page, total_pages=total_pages) #en GET muestro la pagina en la pagina actual
 
-
+#Pagina detallada de cada avistamiento
 @app.route("/avistamiento/<int:avistamiento_id>")
 def detalle_avistamiento(avistamiento_id):
     a = db.get_avistamiento_detalle(avistamiento_id)
     if a is None:
-        abort(404)
-    return render_template("DetalleAvistamiento.html", a=a)
+        abort(404) #si no hay manejo error 404
+    return render_template("DetalleAvistamiento.html", a=a) #si va bien muestro mi html
 
 if __name__ == "__main__":
     app.run()
