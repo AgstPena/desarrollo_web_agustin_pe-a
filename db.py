@@ -197,3 +197,42 @@ def get_avistamiento_detalle(avistamiento_id):
             .filter_by(id=avistamiento_id)
             .first()
         )
+
+#Consultas estadistica
+def get_avistamientos_por_dia():
+    """Devuelve [(fecha_iso, cantidad), ...] ordenado por fecha."""
+    with SessionLocal() as session:
+        dia = func.date(Avistamiento.fecha_hora)
+        filas = (
+            session.query(dia, func.count(Avistamiento.id))
+            .group_by(dia)
+            .order_by(dia)
+            .all()
+        )
+        return [(str(d), n) for d, n in filas]
+    
+def get_avistamientos_por_ave():
+    """Devuelve [(nombre_ave, cantidad), ...] de mayor a menor."""
+    with SessionLocal() as session:
+        total = func.count(Avistamiento.id)
+        filas = (
+            session.query(Ave.nombre, total)
+            .join(Avistamiento, Avistamiento.ave_id == Ave.id)
+            .group_by(Ave.id, Ave.nombre)
+            .order_by(total.desc())
+            .all()
+        )
+        return [(nombre, n) for nombre, n in filas]
+
+def get_voluntarios_por_comuna():
+    """Devuelve [(nombre_comuna, cantidad), ...] de mayor a menor."""
+    with SessionLocal() as session:
+        total = func.count(Voluntario.id)
+        filas = (
+            session.query(Comuna.nombre, total)
+            .join(Voluntario, Voluntario.comuna_id == Comuna.id)
+            .group_by(Comuna.id, Comuna.nombre)
+            .order_by(total.desc(), Comuna.nombre)
+            .all()
+        )
+        return [(nombre, n) for nombre, n in filas]

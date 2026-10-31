@@ -58,5 +58,20 @@
                 {% endif %}
             </nav>
         </div>
+        <div>
+            <h1>Estadistica</h1>
+            <h2> Avistamientos por día </h2>
+            <div id="grafico-dias" data-url="{{ url_for('api_avistamientos_por_dia') }}"></div>
+
+            <h2> Avistamientos por ave </h2>
+            <div id="grafico-aves" data-url="{{ url_for('api_avistamientos_por_ave') }}"></div>
+            
+            <h2> Voluntarios por comuna </h2>
+            <div id="grafico-comunas" data-url="{{ url_for('api_voluntarios_por_comuna') }}"></div>
+            
+        </div>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="{{ url_for('static', filename='js/ListaData.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/Estadisticas.js') }}"></script>
+        </script>
     </body>

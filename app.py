@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from functools import wraps
 import math
+from datetime import date, timedelta
 
 #info utiles
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
@@ -183,6 +184,21 @@ def detalle_avistamiento(avistamiento_id):
     if a is None:
         abort(404) #si no hay manejo error 404
     return render_template("DetalleAvistamiento.html", a=a) #si va bien muestro mi html
+
+@app.route("/api/avistamientos-por-dia")
+def api_avistamientos_por_dia():
+    datos = db.get_avistamientos_por_dia()
+    return jsonify(labels=[d for d, _ in datos], values=[n for _, n in datos])
+
+@app.route("/api/avistamientos-por-ave")
+def api_avistamientos_por_ave():
+    datos = db.get_avistamientos_por_ave()
+    return jsonify(labels=[n for n, _ in datos], values=[c for _, c in datos])
+
+@app.route("/api/voluntarios-por-comuna")
+def api_voluntarios_por_comuna():
+    datos = db.get_voluntarios_por_comuna()
+    return jsonify(labels=[c for c, _ in datos], values=[n for _, n in datos])
 
 if __name__ == "__main__":
     app.run()
