@@ -177,14 +177,34 @@ def lista_data():
 
     return render_template("ListaData.html", avistamientos=avistamientos, page=page, total_pages=total_pages) #en GET muestro la pagina en la pagina actual
 
+def validar_comentario(nombre, texto):
+    if not 3 <= len(nombre) <= 50:
+        return "Tamaño del nombre incorrecto"
+    if len(texto) < 5:
+        return "El comentario es muy corto"
+    return ""
+        
 #Pagina detallada de cada avistamiento
-@app.route("/avistamiento/<int:avistamiento_id>")
+@app.route("/avistamiento/<int:avistamiento_id>", methods=["GET", "POST"])
 def detalle_avistamiento(avistamiento_id):
     a = db.get_avistamiento_detalle(avistamiento_id)
+    nombre, error, texto="","",""
     if a is None:
         abort(404) #si no hay manejo error 404
-    return render_template("DetalleAvistamiento.html", a=a) #si va bien muestro mi html
+        
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        texto = request.form.get("texto", "").strip()
+        error = validar_comentario(nombre, texto)
+        
+        if not error:
+            db.crear_comentario(avistamiento_id, nombre, texto)
+            flash("Tu comentario se envio con exito")
+            return redirect(url_for("detalle_avistamiento", avistamiento_id=avistamiento_id, _anchor="comentarios"))
+        
+    return render_template("DetalleAvistamiento.html", a=a, error=error, nombre=nombre, texto=texto) #si va bien muestro mi html
 
+#Rutas para usar con fetch, asi se obtiene la info, se guardan en formato de json
 @app.route("/api/avistamientos-por-dia")
 def api_avistamientos_por_dia():
     datos = db.get_avistamientos_por_dia()

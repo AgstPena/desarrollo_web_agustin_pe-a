@@ -175,3 +175,5 @@ select{
   gap: 5px; 
 }
 .fila-click { cursor: pointer; }
+
+#comentarios textarea {width: 100%;max-width: 800px;} 

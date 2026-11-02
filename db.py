@@ -68,6 +68,7 @@ class Avistamiento(Base):
     voluntario = relationship("Voluntario", back_populates="avistamientos")
     ave = relationship("Ave", back_populates="avistamientos")
     registros = relationship("Registro", back_populates="avistamiento")
+    comentarios = relationship("Comentario", back_populates="avistamiento", order_by="Comentario.fecha.desc()")
 
 class Registro(Base):
     __tablename__ = "registro"
@@ -77,6 +78,16 @@ class Registro(Base):
     avistamiento_id = Column(Integer, ForeignKey("avistamiento.id"), nullable=False, index=True)
 
     avistamiento = relationship("Avistamiento", back_populates="registros")
+    
+class Comentario(Base):
+    __tablename__ = "comentario"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, nullable=False)
+    avistamiento_id = Column(Integer, ForeignKey("avistamiento.id"), nullable=False, index=True)
+
+    avistamiento = relationship("Avistamiento", back_populates="comentarios")
     
 #Funciones de mi db
 #Buscar
@@ -199,8 +210,8 @@ def get_avistamiento_detalle(avistamiento_id):
         )
 
 #Consultas estadistica
+#Da una lista de la fecha + cantidad de avistamientos ese dia
 def get_avistamientos_por_dia():
-    """Devuelve [(fecha_iso, cantidad), ...] ordenado por fecha."""
     with SessionLocal() as session:
         dia = func.date(Avistamiento.fecha_hora)
         filas = (
@@ -210,9 +221,8 @@ def get_avistamientos_por_dia():
             .all()
         )
         return [(str(d), n) for d, n in filas]
-    
+#Da una lista del nombre de la ave + cantidad de regisros con esa ave
 def get_avistamientos_por_ave():
-    """Devuelve [(nombre_ave, cantidad), ...] de mayor a menor."""
     with SessionLocal() as session:
         total = func.count(Avistamiento.id)
         filas = (
@@ -223,9 +233,8 @@ def get_avistamientos_por_ave():
             .all()
         )
         return [(nombre, n) for nombre, n in filas]
-
+#Da una lista de nombre de la comuna  + cantidad de voluntarios con esa comuna
 def get_voluntarios_por_comuna():
-    """Devuelve [(nombre_comuna, cantidad), ...] de mayor a menor."""
     with SessionLocal() as session:
         total = func.count(Voluntario.id)
         filas = (
@@ -236,3 +245,27 @@ def get_voluntarios_por_comuna():
             .all()
         )
         return [(nombre, n) for nombre, n in filas]
+    
+#Crear comentarios
+def crear_comentario(avistamiento_id, nombre, texto):
+    with SessionLocal() as session:
+        nuevo = Comentario(avistamiento_id=avistamiento_id,
+                           nombre=nombre,
+                           texto=texto,
+                           fecha=datetime.now())
+        session.add(nuevo)
+        session.flush()
+        nuevo_id = nuevo.id
+        session.commit()
+        return nuevo_id
+#buscar comentarios de un avistamiento
+def get_avistamiento_detalle(avistamiento_id):
+    with SessionLocal() as session:
+        return(session.query(Avistamiento).options(
+            joinedload(Avistamiento.ave), 
+            joinedload(Avistamiento.voluntario).joinedload(Voluntario.comuna).joinedload(Comuna.region),
+            selectinload(Avistamiento.registros),
+            selectinload(Avistamiento.comentarios)
+        ).filter_by(id=avistamiento_id).first()
+               )
+    
