@@ -42,7 +42,7 @@
         <h2>Comentario</h2>
         {%for c in a.comentarios%}
             <div>
-                <p>
+                <p> 
                     <strong>{{c.nombre}}</strong>
                     <small> {{c.fecha.strftime("%d-%m-%Y %H:%M")}}</small>
                 </p>
@@ -53,7 +53,7 @@
         {%else%}
         <p> Aun no hay comentarios</p>
         {%endfor%}
-        
+
         <h2>Agrega un comentario</h2>
         {% with mensajes = get_flashed_messages() %}
             {% for m in mensajes %}<p class="success-msg">{{ m }}</p>{% endfor %}
