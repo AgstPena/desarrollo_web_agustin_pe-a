@@ -10,6 +10,8 @@ Tambien al momento de ver un avistamiento en detalle esta la opcion de agregar u
 
 Luego esta la pagina de Registrar avistamiento, aqui se muestra el forms para que el usuario suba su info. El tipo de ave no sirve para nada pues no es informacion que guardemos en la base de datos, pero se quedo ahi por arrastre de como estaba definido la pagina antes. Si no se detecta que hay una session iniciada la pagina va a redireccionar a la de crear cuenta.
 
-Para buscar un avistamiento especifico esta la pestaña de buscador
+Para buscar un avistamiento especifico esta la pestaña de buscador, la cual mediante spring boot permite buscar y mostrar los avistamientos que coincidad con lo ingresado al formulario. Entre los valores dados a spring boot esta el id de avistamiento, esto nos permite ir a la pagina del avistamiento en detalle donde, como se menciono anteriormente, se puede comentar y subir una nota.
 
 Finalmente esta la pagina de crear cuenta, al crear la cuenta se pide que el correo sea uno no inscrito en nuestra base de datos para diferenciar las cuentas, asi si en el futuro creamos una opcion de iniciar sesion se pedira solamente el correo (como no habia una opcion de contraseña en la base de datos se elimino), tampoco hay una opcion de cerrar sesion, asi que la una forma de hacerlo es eliminando las cookies que guardan la sesion actual.
+
+Para ejecutar el codigo hay que hacer flask run en la capeta principal, esto ejecuta todo menor la pagina de buscador. Para buscador hay que ejecutar ./mvnw spring-boot:run desde la carpeta buscador en otra terminal (o hacerle click a run en BuscadorApplication.java)
