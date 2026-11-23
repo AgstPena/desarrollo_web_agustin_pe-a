@@ -14,6 +14,7 @@
         <li><a href="{{ url_for('index') }}"> Inicio</a></li>
         <li><a href="{{ url_for('register') }}"> Crea una cuenta</a></li>
         <li><a href="{{ url_for('vista_aves') }}"> Registra tu avistamiento</a></li>
+        <li><a href="http://localhost:8080/buscador.html"> Buscador</a></li>
     </ul><br>
 
     <div class="avistamiento-card">
@@ -37,7 +38,31 @@
             </a>
             {% endfor %}
         </div>
+        <p>
+            <span class="etiqueta">Nota: </span>
+            <strong id="nota-promedio">{{ nota }}</strong>
+            <small>(<span id="nota-cantidad">{{ cantidad_notas }}</span> valoraciones)</small>
+        </p>
     </div>
+
+    <section id="notas">
+        <h2>Evalúa este avistamiento</h2>
+        <p id="nota-msg" class="error-msg"></p>
+        <form id="form-nota" class="main-container" data-url="{{ url_for('agregar_nota', avistamiento_id=a.id) }}">
+            <div class="input-control">
+                <label for="nota">Nota (1 a 7)</label>
+                <select id="nota" name="nota">
+                    <option value="">Selecciona una nota</option>
+                    {% for n in range(1, 8) %}
+                    <option value="{{ n }}">{{ n }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Enviar nota</button>
+        </form>
+    </section>
+    <script src="{{ url_for('static', filename='js/Nota.js') }}"></script>
+
     <section>
         <h2>Comentario</h2>
         {%for c in a.comentarios%}

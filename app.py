@@ -183,7 +183,31 @@ def validar_comentario(nombre, texto):
     if len(texto) < 5:
         return "El comentario es muy corto"
     return ""
-        
+
+#si existe nota retorna su promedio, sino pone "-"
+def formatear_nota(promedio):
+    return "-" if promedio is None else f"{promedio:.1f}"
+
+#ruta usada para hacer obtener la nota
+@app.route("/avistamiento/<int:avistamiento_id>/nota", methods=["POST"])
+def agregar_nota(avistamiento_id):
+    if db.get_avistamiento_detalle(avistamiento_id) is None:
+        return jsonify(ok=False, error="El avistamiento no existe."), 404
+
+    valor = request.form.get("nota", type=int)
+    #validador
+    if valor is None or not 1 <= valor <= 7:
+        return jsonify(ok=False, error="La nota debe ser un número entre 1 y 7."), 400
+
+    try:
+        db.create_nota(avistamiento_id, valor)
+        promedio, cantidad = db.get_nota_promedio(avistamiento_id)
+    except Exception:
+        app.logger.exception("Error al guardar la nota")
+        return jsonify(ok=False, error="No se pudo guardar la nota."), 500
+
+    return jsonify(ok=True, promedio=formatear_nota(promedio), cantidad=cantidad)
+
 #Pagina detallada de cada avistamiento
 @app.route("/avistamiento/<int:avistamiento_id>", methods=["GET", "POST"])
 def detalle_avistamiento(avistamiento_id):
@@ -201,8 +225,10 @@ def detalle_avistamiento(avistamiento_id):
             db.crear_comentario(avistamiento_id, nombre, texto)
             flash("Tu comentario se envio con exito")
             return redirect(url_for("detalle_avistamiento", avistamiento_id=avistamiento_id, _anchor="comentarios"))
-        
-    return render_template("DetalleAvistamiento.html", a=a, error=error, nombre=nombre, texto=texto) #si va bien muestro mi html
+
+    promedio, cantidad_notas = db.get_nota_promedio(avistamiento_id)
+    #si va bien muestro mi html
+    return render_template("DetalleAvistamiento.html", a=a, error=error, nombre=nombre, texto=texto, nota=formatear_nota(promedio), cantidad_notas=cantidad_notas)
 
 #Rutas para usar con fetch, asi se obtiene la info, se guardan en formato de json
 @app.route("/api/avistamientos-por-dia")

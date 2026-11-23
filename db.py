@@ -268,4 +268,26 @@ def get_avistamiento_detalle(avistamiento_id):
             selectinload(Avistamiento.comentarios)
         ).filter_by(id=avistamiento_id).first()
                )
-    
+
+#Modelo nota
+class Nota(Base):
+    __tablename__ = "nota"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    avistamiento_id = Column(Integer, ForeignKey("avistamiento.id"), nullable=False, index=True)
+    nota = Column(Integer, nullable=False)
+
+#calcular y devolver promedio
+def get_nota_promedio(avistamiento_id):
+    with SessionLocal() as session:
+        prom, cant = (
+            session.query(func.avg(Nota.nota), func.count(Nota.id))
+            .filter(Nota.avistamiento_id == avistamiento_id)
+            .one()
+        )
+        return (float(prom) if prom is not None else None), cant
+
+#crear nueva nota
+def create_nota(avistamiento_id, valor):
+    with SessionLocal() as session:
+        session.add(Nota(avistamiento_id=avistamiento_id, nota=valor))
+        session.commit()

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
+    <title>Buscador de avistamientos</title>
+</head>
+<body class="inicio-body">
+    <header>
+        <h1>Buscador de avistamientos</h1>
+    </header>
+
+    <ul class="NavBar">
+        <li><a href="http://127.0.0.1:5000/"> Inicio</a></li>
+        <li><a href="http://127.0.0.1:5000/ListaData"> Listado y estadísticas</a></li>
+        <li><a href="http://127.0.0.1:5000/VistaAves"> Registra tu avistamiento</a></li>
+        <li><a href="{{ url_for('register') }}"> Crea una cuenta</a></li>
+    </ul><br>
+
+    <div>
+        <form id="form-buscar" autocomplete="off">
+            <div class="input-control">
+                <label for="buscar">Buscar por ave, voluntario o comuna</label>
+                <input type="text" id="buscar" name="q" placeholder="Escribe para buscar...">
+            </div>
+        </form>
+
+        <p id="mensaje"></p>
+
+        <table class = "styled-table" id="tabla" hidden>
+            <thead>
+                <tr>
+                    <th>Voluntario</th>
+                    <th>Fecha</th>
+                    <th>Ave</th>
+                    <th>Comuna</th>
+                </tr>
+            </thead>
+            <tbody id="resultados"></tbody>
+        </table>
+    </div>
+
+    <script src="/buscador.js"></script>
+</body>
+</html>
